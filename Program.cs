@@ -10,8 +10,10 @@ internal static class Utils {
     }
 }
 
-internal class Day1()    
+internal class Day1(string dataPath)    
 {
+    private string dataPath = dataPath;
+    
     public string ReadFile(string file)
     {
         using StreamReader reader = new(file);
@@ -25,7 +27,7 @@ internal class Day1()
             ("seven", 7), ("eight", 8), ("nine", 9)
     };
 
-    public int? checkStartsWithNumberString(string line) {
+    public int? GetStartingNumber(string line) {
         foreach(var (word, number) in numbers) {
             if(line.StartsWith(word)) {
                 return number;
@@ -35,7 +37,7 @@ internal class Day1()
         return null;
     }
 
-    public int? getEndingNumber(string line) {
+    public int? GetEndingNumber(string line) {
         foreach(var (word, number) in numbers) {
             if(line.EndsWith(word)) {
                 return number;
@@ -44,19 +46,11 @@ internal class Day1()
 
         return null;
     }
-}
 
-class Program
-{
-    static void Main()
-    {
-        string dataPath = "data.txt";
-        var day1 = new Day1();
-        var data = day1.ReadFile(dataPath);
+    public string GetResult() {
+        var data = this.ReadFile(this.dataPath);
         
         string[] splittedLines = data.Split("\n");
-
-        Console.WriteLine(string.Join(", ", splittedLines));
 
         var linesCount = splittedLines.Count() - 1;
         (int l, int r)[] foundNums = new (int, int)[linesCount];
@@ -70,7 +64,7 @@ class Program
                     foundNums[i].l = (int) char.GetNumericValue(c);
                     break;
                 } else {
-                    var startingNumber = day1.checkStartsWithNumberString(rest);
+                    var startingNumber = this.GetStartingNumber(rest);
                     if (startingNumber != null) {
                         foundNums[i].l = (int) startingNumber;
                         break;
@@ -81,12 +75,11 @@ class Program
             for (int j = line.Length - 1; j >= 0; j--) {
                 var c = line[j];
                 var rest = line[..j];
-                Console.WriteLine(rest);
                 if(char.IsDigit(c)) {   
                     foundNums[i].r = (int) char.GetNumericValue(c);
                     break;
                 } else {
-                    var endingNumber = day1.getEndingNumber(rest);
+                    var endingNumber = this.GetEndingNumber(rest);
                     if (endingNumber != null) {
                         foundNums[i].r = (int) endingNumber;
                         break;
@@ -96,13 +89,23 @@ class Program
         }
 
         string output = string.Join("\n", foundNums.Select(p => $"{p.l}{p.r}"));
-        Console.WriteLine(output);
 
         int sum = 0;
         foreach(var num in foundNums) {
             var combined = int.Parse($"{num.l}{num.r}");
             sum += combined;
         }
-        Console.WriteLine(sum);
+
+        return sum.ToString();
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        string dataPath = "data.txt";
+        var day1 = new Day1(dataPath);        
+        Console.WriteLine(day1.GetResult());
     }
 }
