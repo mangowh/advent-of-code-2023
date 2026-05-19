@@ -4,6 +4,7 @@
 ## Get latest from `dotnet new gitignore`
 
 ###
+data/*
 data.txt
 test_data.txt
 ###

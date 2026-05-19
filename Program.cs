@@ -13,7 +13,8 @@ internal static class Utils {
 internal class Day1(string dataPath)    
 {
     private string dataPath = dataPath;
-    
+
+    // TODO use StreamReader directly in other Day1 methods
     public string ReadFile(string file)
     {
         using StreamReader reader = new(file);
@@ -100,12 +101,65 @@ internal class Day1(string dataPath)
     }
 }
 
+internal class Day2(string dataPath) {
+    private string dataPath = dataPath;
+
+    public Dictionary<string, int> cubesRequirements = new Dictionary<string, int> {
+        {"red", 12},
+        {"green", 13},
+        {"blue", 14}
+    };
+
+    public string GetResult() {
+        int sum = 0;
+
+        using (StreamReader sr = new StreamReader(this.dataPath))
+        {
+
+            string line;
+            while((line = sr.ReadLine()) != null) {
+                var parts = line.Split(":");
+                var (gameName, gameData) = (parts[0].Trim(), parts[1].Trim());
+                var extractions = gameData.Split(";");
+
+                bool gameIsPossible = true;
+                
+                Console.WriteLine(gameName);
+                foreach(var extraction in extractions) {
+                    var extractedColors = extraction.Trim().Split(", ");
+
+                    foreach(var extractedColor in extractedColors) {
+                        var extractedColorSplitted = extractedColor.Trim().Split(" ");
+                        var (extractedColorCount, extractedColorName) = (extractedColorSplitted[0].Trim(), extractedColorSplitted[1].Trim());
+                        Console.WriteLine(extractedColorName + ": " + extractedColorCount);
+
+                        if(int.Parse(extractedColorCount) > cubesRequirements[extractedColorName]) {
+                            Console.WriteLine($"{gameName} impossible because {extractedColorName} ({extractedColorCount}) is higher then {cubesRequirements[extractedColorName]}");
+                            gameIsPossible = false;
+                            break;
+                        }
+                    }
+                    Console.WriteLine(";");
+                }
+                Console.WriteLine("\n");
+
+                if(gameIsPossible) {
+                    var gameNameParts = gameName.Split(" ");
+                    sum += int.Parse(gameNameParts[1]);
+                }
+            }
+        }
+        
+        return sum.ToString();
+    }
+}
+
 class Program
 {
     static void Main()
     {
-        string dataPath = "data.txt";
-        var day1 = new Day1(dataPath);        
-        Console.WriteLine(day1.GetResult());
+        string dataPath = "data/data_day2.txt";
+        var day = new Day2(dataPath);        
+        Console.WriteLine(day.GetResult());
     }
 }
