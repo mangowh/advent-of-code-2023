@@ -152,6 +152,49 @@ internal class Day2(string dataPath) {
         
         return sum.ToString();
     }
+
+    public string GetResultPart2() {
+        int sumOfPowers = 0;
+
+        using (StreamReader sr = new StreamReader(this.dataPath))
+        {
+            string line;
+            while((line = sr.ReadLine()) != null) {
+                var parts = line.Split(":");
+                var (gameName, gameData) = (parts[0].Trim(), parts[1].Trim());
+                var extractions = gameData.Split(";");
+
+                var maxPerColor = new Dictionary<string, int> {
+                    {"red", int.MinValue},
+                    {"green", int.MinValue},
+                    {"blue", int.MinValue}
+                };
+                
+                Console.WriteLine(gameName);
+                foreach(var extraction in extractions) {
+                    var extractedColors = extraction.Trim().Split(", ");
+
+                    foreach(var extractedColor in extractedColors) {
+                        var extractedColorSplitted = extractedColor.Trim().Split(" ");
+                        var (extractedColorCount, extractedColorName) = (extractedColorSplitted[0].Trim(), extractedColorSplitted[1].Trim());
+                        Console.WriteLine(extractedColorName + ": " + extractedColorCount);
+
+                        var colorCount = int.Parse(extractedColorCount);
+                        if(colorCount > maxPerColor[extractedColorName]) {
+                            maxPerColor[extractedColorName] = colorCount;
+                        }
+                    }
+                    Console.WriteLine(";");
+                }
+                Console.WriteLine("\n");
+
+                var power = maxPerColor["red"] * maxPerColor["green"] * maxPerColor["blue"];
+                sumOfPowers += power;
+            }
+        }
+        
+        return sumOfPowers.ToString();
+    }
 }
 
 class Program
@@ -160,6 +203,6 @@ class Program
     {
         string dataPath = "data/data_day2.txt";
         var day = new Day2(dataPath);        
-        Console.WriteLine(day.GetResult());
+        Console.WriteLine(day.GetResultPart2());
     }
 }
