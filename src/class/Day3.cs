@@ -1,8 +1,8 @@
+namespace Days;
+
 using System.Numerics;
 
-namespace Day3;
-
-class NumberChar
+public class NumberChar
 {
     public char c;
     public int x;

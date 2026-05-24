@@ -1,4 +1,6 @@
-abstract class Day(string dataPath)
+namespace Days;
+
+public abstract class Day(string dataPath)
 {
     protected string dataPath = dataPath;
 

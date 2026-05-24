@@ -1,10 +1,28 @@
-﻿class Program
+﻿using System.Reflection;
+
+using Days;
+
+class Program
 {
     static void Main(string[] args)
     {
-        string dataPath = args[0];
+        string dayNum = args[0];
+        string dataPath = args[1];
 
-        var day = new Day3.Day3(dataPath);
+        var type = Assembly.GetExecutingAssembly().GetType($"Days.Day{dayNum}");
+
+        if(type == null)
+        {
+            throw new Exception("Type not found");
+        }
+
+        var day = (Day?)Activator.CreateInstance(type, dataPath); ;
+        
+        if(day == null)
+        {
+            throw new Exception("Error creating day class");
+        }
+        
         Console.WriteLine(day.GetResultPart2());
     }
 }
