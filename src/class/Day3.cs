@@ -68,20 +68,7 @@ class NumberFound
 
 internal class Day3: Day
 {
-    private List<string> dataLines;
-
-    public Day3(string dataPath): base(dataPath)
-    {
-        this.dataLines = new List<string>();
-        using (StreamReader sr = new StreamReader(this.dataPath))
-        {
-            string? line;
-            while((line = sr.ReadLine()) != null)
-            {
-                dataLines.Add(line);
-            }
-        }
-    }
+    public Day3(string dataPath): base(dataPath) {}
 
     public bool IsASpecialSymbol(char c)
     {
