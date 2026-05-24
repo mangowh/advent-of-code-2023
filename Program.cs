@@ -5,6 +5,6 @@
         string dataPath = args[0];
 
         var day = new Day3.Day3(dataPath);
-        Console.WriteLine(day.GetResultPart1());
+        Console.WriteLine(day.GetResultPart2());
     }
 }

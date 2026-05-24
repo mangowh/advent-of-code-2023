@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace Day3;
 
 class NumberChar
@@ -34,9 +36,18 @@ class NumberChar
     }
 }
 
-class NumberFound(List<NumberChar> numbers)
+class NumberFound
 {
-    public List<NumberChar> numbers = numbers;
+    public readonly List<NumberChar> numbers;
+    public readonly Vector2 start;
+    public readonly Vector2 end;
+
+    public NumberFound(List<NumberChar> numbers)
+    {
+        this.numbers = numbers;
+        this.start = new Vector2(numbers.First().x, numbers.First().y);
+        this.end = new Vector2(numbers.Last().x, numbers.Last().y);
+    }
 
     public Point[] GetAdiancents()
     {
@@ -57,11 +68,6 @@ class NumberFound(List<NumberChar> numbers)
 
 internal class Day3: Day
 {
-    public bool IsASpecialSymbol(char c)
-    {
-        return c != '.' && !char.IsLetterOrDigit(c);    
-    }
-
     private List<string> dataLines;
 
     public Day3(string dataPath): base(dataPath)
@@ -76,9 +82,14 @@ internal class Day3: Day
             }
         }
     }
+
+    public bool IsASpecialSymbol(char c)
+    {
+        return c != '.' && !char.IsLetterOrDigit(c);    
+    }
+
     public override string GetResultPart1()
     {
-
         bool recording = false;
         List<NumberChar> recordingChars = [];
         List<NumberFound> recordedNumbers = [];
@@ -137,6 +148,81 @@ internal class Day3: Day
 
     public override string GetResultPart2()
     {
-        throw new NotImplementedException();
+        bool recording = false;
+        List<NumberChar> recordingChars = [];
+        List<NumberFound> recordedNumbers = [];
+        HashSet<Vector2> starPositions = [];
+
+        for(int y = 0; y < dataLines.Count(); y++)
+        {
+            var row = dataLines[y];
+
+            for(int x = 0; x < row.Count(); x++)
+            {
+                var currentChar = row[x];
+                
+                recording = char.IsDigit(currentChar);
+
+                if(recording)
+                {
+                    recordingChars.Add(new NumberChar
+                    {
+                        c=currentChar,
+                        x=x,
+                        y=y
+                    });
+                } else if(recordingChars.Count() > 0)
+                {
+                    recordedNumbers.Add(new NumberFound(recordingChars));
+                    recordingChars = [];
+                }
+
+                if(currentChar == '*')
+                {
+                    starPositions.Add(new Vector2(x, y));
+                }
+            }
+
+            if(recordingChars.Count > 0)
+            {
+                recordedNumbers.Add(new NumberFound(recordingChars));
+                recordingChars = [];
+            }
+        }
+
+        
+        Dictionary<Vector2, List<int>> gears = new Dictionary<Vector2, List<int>>();
+        foreach(var number in recordedNumbers)
+        {
+            foreach(var adjacent in number.GetAdiancents())
+            {
+                if (adjacent.y >= 0 && adjacent.y < dataLines.Count() &&
+                    adjacent.x >= 0 && adjacent.x < dataLines[0].Count())
+                {
+                    var adjacentVec = new Vector2(adjacent.x, adjacent.y);
+                    if(starPositions.Contains(adjacentVec))
+                    {
+                        if(!gears.ContainsKey(adjacentVec))
+                        {
+                            gears[adjacentVec] = new List<int>();    
+                        }
+
+                        gears[adjacentVec].Add(number.ToInt());
+                    }
+                }
+            }
+        }
+
+        int sum = 0;
+
+        foreach (KeyValuePair<Vector2, List<int>> entry in gears)
+        {
+            if(entry.Value.Count() == 2)
+            {
+                sum += entry.Value[0] * entry.Value[1];
+            }    
+        }
+
+        return sum.ToString();
     }
 }
