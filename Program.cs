@@ -197,67 +197,75 @@ abstract class Day(string dataPath)
 
     public abstract string GetResultPart1();
     public abstract string GetResultPart2();
-}    
+}
 
-internal class Day3(string dataPath) : Day(dataPath)
+class NumberChar
+{
+    public char c;
+    public int x;
+    public int y;
+
+    public Point[] GetAdiacents()
+    {
+        List<Point> res = [];
+        Point[] dirs = { 
+            ( -1, -1 ), ( 0, -1 ), ( +1, -1 ),
+            ( -1,  0 ),            ( +1,  0 ),
+            ( -1, +1 ), ( 0, +1 ), ( +1, +1 )
+        };
+    
+        foreach(var dir in dirs)
+        {
+            res.Add(new Point(x + dir.x, y + dir.y));
+        }
+
+        return res.ToArray();
+    }
+
+    public Point ToPoint()
+    {
+        return new Point(x, y);
+    }
+
+    public override string ToString()
+    {
+        return $"{c}:({x},{y})";
+    }
+}
+
+class NumberFound(List<NumberChar> numbers)
+{
+    public List<NumberChar> numbers = numbers;
+
+    public Point[] GetAdiancents()
+    {
+        return this.numbers.SelectMany((n) => n.GetAdiacents()).Distinct().ToArray();
+    }
+
+    public override string ToString()
+    {
+        return string.Join(", ", this.numbers.Select((n) => n.ToString()));
+    }
+
+    public int ToInt()
+    {
+        return int.Parse(string.Join("", this.numbers.Select((n) => n.c)));
+    }
+}
+
+
+internal class Day3: Day
 {
     public bool IsASpecialSymbol(char c)
     {
         return c != '.' && !char.IsLetterOrDigit(c);    
     }
 
-    class NumberChar
+    private List<string> dataLines;
+
+    public Day3(string dataPath): base(dataPath)
     {
-        public char c;
-        public int x;
-        public int y;
-
-        public Point[] GetAdiacents()
-        {
-            List<Point> res = [];
-            Point[] dirs = { 
-                ( -1, -1 ), ( 0, -1 ), ( +1, -1 ),
-                ( -1,  0 ),            ( +1,  0 ),
-                ( -1, +1 ), ( 0, +1 ), ( +1, +1 )
-            };
-        
-            foreach(var dir in dirs)
-            {
-                res.Add(new Point(x + dir.x, y + dir.y));
-            }
-
-            return res.ToArray();
-        }
-
-        public override string ToString()
-        {
-            return $"{c}:({x},{y})";
-        }
-    }
-
-    class NumberFound(List<NumberChar> numbers)
-    {
-        public List<NumberChar> numbers = numbers;
-
-        public Point[] GetAdiancents()
-        {
-            return this.numbers.SelectMany((n) => n.GetAdiacents()).Distinct().ToArray();
-        }
-
-        public override string ToString()
-        {
-            return string.Join(", ", this.numbers.Select((n) => n.ToString()));
-        }
-
-        public int ToInt()
-        {
-            return int.Parse(string.Join("", this.numbers.Select((n) => n.c)));
-        }
-    }
-
-    public override string GetResultPart1()
-    {
-        var dataLines = new List<string>();
+        this.dataLines = new List<string>();
         using (StreamReader sr = new StreamReader(this.dataPath))
         {
             string? line;
@@ -266,6 +274,9 @@ internal class Day3(string dataPath) : Day(dataPath)
                 dataLines.Add(line);
             }
         }
+    }
+    public override string GetResultPart1()
+    {
 
         bool recording = false;
         List<NumberChar> recordingChars = [];
@@ -295,6 +306,12 @@ internal class Day3(string dataPath) : Day(dataPath)
                     recordingChars = [];
                 }
             }
+
+            if(recordingChars.Count > 0)
+            {
+                recordedNumbers.Add(new NumberFound(recordingChars));
+                recordingChars = [];
+            }
         }
 
         int sum = 0;
@@ -307,7 +324,6 @@ internal class Day3(string dataPath) : Day(dataPath)
                 {
                     if(this.IsASpecialSymbol(dataLines[adjacent.y][adjacent.x]))
                     {
-                        Console.WriteLine(number);
                         sum += number.ToInt();
                         break;
                     }
@@ -328,7 +344,7 @@ class Program
 {
     static void Main()
     {
-        string dataPath = "data/data_day3.txt";
+        string dataPath = "C:/Users/Stefano/Developer/dotnet/advent-of-code-2023/data/data_day3.txt";
         var day = new Day3(dataPath);
         Console.WriteLine(day.GetResultPart1());
     }
