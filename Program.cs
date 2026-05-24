@@ -25,6 +25,6 @@ class Program
         
         Console.WriteLine("Results:");
         Console.WriteLine("Part 1: " + day.GetResultPart1());
-        // Console.WriteLine("Part 2: " + day.GetResultPart2());
+        Console.WriteLine("Part 2: " + day.GetResultPart2());
     }
 }
